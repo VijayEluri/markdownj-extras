@@ -16,7 +16,10 @@ package org.markdownj.extras;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -27,188 +30,228 @@ import org.apache.commons.cli.PosixParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// mvn exec:java -Dexec.mainClass="org.markdownj.extras.MarkdownApp" -Dexec.args="--header src/test/resources/header.html --footer src/test/resources/footer.html --source src/test/resources/site --destination target/markdownj"
+// mvn exec:java -Dexec.mainClass="org.markdownj.extras.MarkdownApp"
+// -Dexec.args="--header src/test/resources/header.html --footer
+// src/test/resources/footer.html --source src/test/resources/site --destination
+// target/markdownj"
 
 /**
- * Markdown app.
- * Transforms in html every file found in source dir, maintaining the original directory structure.
+ * Markdown app. Transforms in html every file found in source dir, maintaining
+ * the original directory structure.
  * 
  * mvn exec:java -Dexec.mainClass="org.markdownj.extras.MarkdownApp"
  * 
  * mvn exec:java -Dexec.mainClass="org.markdownj.extras.MarkdownApp" \
- * -Dexec.args="--header src/test/resources/header.html --footer src/test/resources/footer.html \
- * --source src/test/resources/site --destination target/markdownj"
+ * -Dexec.args="--header src/test/resources/header.html --footer
+ * src/test/resources/footer.html \ --source src/test/resources/site
+ * --destination target/markdownj"
  * 
  */
-public class MarkdownApp
-{
+public class MarkdownApp {
 
-    static private Logger logger; @SuppressWarnings("static-access")
-    protected Logger log()  { if (this.logger == null) this.logger = LoggerFactory.getLogger(this.getClass()); return this.logger; }
+    private static final String CL_EXTENSIONS_SEPARATOR = ",";
+
+    static private Logger logger;
+
+    @SuppressWarnings("static-access")
+    protected Logger log() {
+        if (this.logger == null)
+            this.logger = LoggerFactory.getLogger(this.getClass());
+        return this.logger;
+    }
 
     /**
-     * Absolute path of the directory containing markdown files.
+     * Path of the directory containing markdown files.
+     * If used from command line, the path is translated to absolute path.
      */
-	private String source;
+    private String source;
 
-	/**
-	 * Absolute path of the target directory. 
-	 */
-	private String destination;
-	
-	/**
-	 * Path to the html file used as header for every transformed markdown file.
-	 * Could be absolute or relative.
-	 * 
-	 */
-	private String header;
+    /**
+     * Path of the target directory.
+     * If used from command line, the path is translated to absolute path.
+     */
+    private String destination;
 
-	/**
-	 * Path to the html file used as footer for every transformed markdown file.
-	 * Could be absolute or relative.
-	 * 
-	 */
-	private String footer;
-	
-	private MarkdownService markdown = new MarkdownServiceImpl();
+    /**
+     * Path to the html file used as header for every transformed markdown file.
+     * Could be absolute or relative.
+     * 
+     */
+    private String header;
 
-	public static void main(String[] args)
-	{
-		MarkdownApp app = new MarkdownApp();
+    /**
+     * Path to the html file used as footer for every transformed markdown file.
+     * Could be absolute or relative.
+     * 
+     */
+    private String footer;
 
-		app.log().info("Markdown app starting with args: {}", Arrays.toString(args));
-		
-		CommandLineParser parser = new PosixParser();
-		Options options = new Options();
-		options.addOption("s", "source", true, "The source directory for markdown files");
-		options.addOption("d", "destination", true, "The destination directory for html files");
-		options.addOption("h", "header", true, "The path to the html header file");
-		options.addOption("f", "footer", true, "The path to the html footer file");
+    /**
+     * Only files with extension in list will be processed.
+     */
+    private List<String> processableExtensions = new ArrayList<String>();
 
-		HelpFormatter formatter = new HelpFormatter();
-		String helpHeader = String.format("%s", MarkdownApp.class.getName());
+    private MarkdownService markdown = new MarkdownServiceImpl();
 
-		try {
-			CommandLine line = parser.parse(options, args);
-			app.process(line);
-		} catch (ParseException e) {
-			app.log().warn(e.getMessage(), e);
-			formatter.printHelp(helpHeader, options);
-		}
+    public static void main(String[] args) {
+        MarkdownApp app = new MarkdownApp();
+        app.log().debug("Markdown app starting with args: {}", Arrays.toString(args));
+        CommandLineParser parser = new PosixParser();
+        Options options = new Options();
+        options.addOption("s", "source", true, "The source directory for markdown files");
+        options.addOption("d", "destination", true, "The destination directory for html files");
+        options.addOption("h", "header", true, "The path to the html header file");
+        options.addOption("f", "footer", true, "The path to the html footer file");
+        options.addOption("e", "extensions", true, "A comma separated list of file extensions to process. If setted, files with extension not in list won't be processed");
+        HelpFormatter formatter = new HelpFormatter();
+        String helpHeader = String.format("%s", MarkdownApp.class.getName());
+        try {
+            CommandLine line = parser.parse(options, args);
+            app.process(line);
+        } catch (ParseException e) {
+            app.log().warn(e.getMessage(), e);
+            formatter.printHelp(helpHeader, options);
+        }
+    }
 
-	}
+    public void process(CommandLine commandLine) {
+        File sourceFile = null;
+        File destinationFile = null;
+        if (commandLine.hasOption("source")) {
+            String sourceArg = commandLine.getOptionValue("source");
+            if (sourceArg == null) {
+                log().warn("sourceArg NULL. Exiting");
+                return;
+            }
+            sourceFile = new File(sourceArg);
+            setSource(FileUtils.normalizedPath(sourceFile.getAbsolutePath()));
+            log().debug("using source path '{}'", source);
+            if (!sourceFile.exists()) {
+                log().warn("source not found '{}'. Exiting", source);
+                return;
+            }
+        } else {
+            log().warn("source argument is mandatory. Exiting");
+            return;
+        }
+        if (commandLine.hasOption("destination")) {
+            destinationFile = new File(commandLine.getOptionValue("destination"));
+            setDestination(FileUtils.normalizedPath(destinationFile.getAbsolutePath()));
+            log().debug("using destination path '{}'", destination);
+            if (!destinationFile.exists()) {
+                destinationFile.mkdirs();
+            }
+        }
+        if (commandLine.hasOption("header")) {
+            setHeader(commandLine.getOptionValue("header"));
+        }
+        if (commandLine.hasOption("footer")) {
+            setFooter(commandLine.getOptionValue("footer"));
+        }
+        if (commandLine.hasOption("extensions")) {
+            List<String> exts = extensionsToList(commandLine.getOptionValue("extensions"));
+            setProcessableExtensions(exts);
+        }
+        process();
+    }
 
-	public void process(CommandLine commandLine)
-	{
-		File sourceFile = null;
-		File destinationFile = null;
-		if (commandLine.hasOption("source")) {
-			String sourceArg = commandLine.getOptionValue("source");
-			if (sourceArg == null) {
-				log().warn("sourceArg NULL. Exiting");
-				return;
-			}
-			sourceFile = new File(sourceArg);
-			setSource(FileUtils.normalizedPath(sourceFile.getAbsolutePath()));
-			log().debug("using source path '{}'", source);
-			if (!sourceFile.exists()) {
-				log().warn("source not found '{}'. Exiting", source);
-				return;
-			}
-		} else {
-			log().warn("source argument is mandatory. Exiting");
-			return;
-		}
+    public void process() {
+        File sourceFile = new File(getSource());
+        markdown.setHeaderPath(getHeader());
+        markdown.setFooterPath(getFooter());
+        try {
+            traverse(sourceFile);
+        } catch (IOException e) {
+            log().warn(e.getMessage(), e);
+        }
+    }
 
-		if (commandLine.hasOption("destination")) {
-			destinationFile = new File(commandLine.getOptionValue("destination"));
-			setDestination(FileUtils.normalizedPath(destinationFile.getAbsolutePath()));
-			log().debug("using destination path '{}'", destination);
-			if (!destinationFile.exists()) {
-				destinationFile.mkdirs();
-			}
-		}
+    public final void traverse(final File f) throws IOException {
+        if (f.isDirectory()) {
+            final File[] childs = f.listFiles();
+            for (File child : childs) {
+                traverse(child);
+            }
+            return;
+        }
+        processFile(f);
+    }
 
-		if (commandLine.hasOption("header")) {
-			setHeader(commandLine.getOptionValue("header"));
-		}
-		
-		if (commandLine.hasOption("footer")) {
-			setFooter(commandLine.getOptionValue("footer"));
-		}
-		process();
-	}
-	
-	public void process()
-	{
-		File sourceFile = new File(getSource());
+    public void processFile(final File f) {
+        String mdFilepath = FileUtils.normalizedPath(f.getAbsolutePath());
+        String df = mdFilepath.replaceFirst(source, destination);
+        String extension = FileUtils.extension(df);
+        if ((getProcessableExtensions().size() == 0) || (getProcessableExtensions().contains(extension))) {
+            String destinationFile = FileUtils.changeExtension(df, ".html");
+            log().debug("process '{}' -> '{}'", mdFilepath, destinationFile);
+            String markdownContent = FileUtils.readFileFromPath(mdFilepath);
+            markdown.setContent(markdownContent);
+            String html = markdown.process();
+            try {
+                FileUtils.writeFile(destinationFile, html);
+            } catch (IOException e) {
+                log().warn(e.getMessage(), e);
+            }
+        } else {
+            log().info("Skipping {} (no processable extension '{}')", df, extension);
+        }
+    }
 
-		markdown.setHeaderPath(getHeader());
-		markdown.setFooterPath(getFooter());
+    /**
+     * Converts the comma separated list of extensions from command line to a java.util.List.
+     * 
+     * @param optionValue
+     * @return
+     */
+    private List<String> extensionsToList(String extensions) {
+        String[] exts = extensions.split(MarkdownApp.CL_EXTENSIONS_SEPARATOR);
+        if (exts.length > 0)
+            return Arrays.asList(exts);
+        return Collections.emptyList();
+    }
+    
+    public String getSource() {
+        return source;
+    }
 
-		try {
-			traverse(sourceFile);
-		} catch (IOException e) {
-			log().warn(e.getMessage(), e);
-		}		
-	}
+    public void setSource(String source) {
+        this.source = source;
+    }
 
-	public final void traverse(final File f) throws IOException {
-		if (f.isDirectory()) {
-			final File[] childs = f.listFiles();
-			for (File child : childs) {
-				traverse(child);
-			}
-			return;
-		}
-		processFile(f);
-	}
+    public String getDestination() {
+        return destination;
+    }
 
-	public void processFile(final File f) {
-		String mdFilepath = FileUtils.normalizedPath(f.getAbsolutePath());
-		String df = mdFilepath.replaceFirst(source, destination);
-		String destinationFile = FileUtils.changeExtension(df, ".html");
-		log().debug("process '{}' -> '{}'", mdFilepath, destinationFile);
-		String markdownContent = FileUtils.readFileFromPath(mdFilepath);
-		markdown.setContent(markdownContent);
-		String html = markdown.process();
-		try {
-			FileUtils.writeFile(destinationFile, html);
-		} catch (IOException e) {
-			log().warn(e.getMessage(), e);
-		}
-	}
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
 
-	public String getSource() {
-		return source;
-	}
+    public String getHeader() {
+        return header;
+    }
 
-	public void setSource(String source) {
-		this.source = source;
-	}
+    public void setHeader(String header) {
+        this.header = header;
+    }
 
-	public String getDestination() {
-		return destination;
-	}
+    public String getFooter() {
+        return footer;
+    }
 
-	public void setDestination(String destination) {
-		this.destination = destination;
-	}
+    public void setFooter(String footer) {
+        this.footer = footer;
+    }
 
-	public String getHeader() {
-		return header;
-	}
+    public List<String> getProcessableExtensions() {
+        return processableExtensions;
+    }
 
-	public void setHeader(String header) {
-		this.header = header;
-	}
+    public void setProcessableExtensions(List<String> processableExtensions) {
+        this.processableExtensions = processableExtensions;
+    }
 
-	public String getFooter() {
-		return footer;
-	}
-
-	public void setFooter(String footer) {
-		this.footer = footer;
-	}
+    public void addProcessableExtension(String extension) {
+        this.processableExtensions.add(extension);
+    }
 
 }
