@@ -5,7 +5,7 @@
   <groupId>org.markdownj</groupId>
   <artifactId>markdownj-extras</artifactId>
   <packaging>jar</packaging>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1</version>
   <name>Markdown Extras</name>
   <description>Basic implementations of common use cases for Markdown, using MarkdownJ library.</description>
 
