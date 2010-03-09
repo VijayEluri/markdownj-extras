@@ -6,6 +6,7 @@ Markdown Extras contains basic code implementations of common use cases of Markd
 
 MarkdownJ is the pure Java port of Markdown.
 
+
 Features
 --------
 
@@ -16,6 +17,15 @@ Features
 *   MarkdownApp
 
     A basic application which uses MarkdownService to process recursively the markdown files in a given directory.
+
+
+Markdown App
+------------
+
+Usage (after mvn clean install):
+
+    mvn exec:java -Dexec.mainClass="org.markdownj.extras.MarkdownApp" -Dexec.args="--header src/test/resources/site/templates/header.html \
+    --footer src/test/resources/site/templates/footer.html --source src/test/resources/site/markdown --destination target/markdownj"
 
 
 Licensing
@@ -30,8 +40,6 @@ http://www.apache.org/licenses/LICENSE-2.0
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 See the License for the specific language governing permissions and limitations under the License.
-
-FileUtils class contains some method shamelessly copied from Google Guava (released under Apache license version 2.0). 
 
 
 
