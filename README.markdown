@@ -24,8 +24,10 @@ Markdown App
 
 Usage (after mvn clean install):
 
-    mvn exec:java -Dexec.mainClass="org.markdownj.extras.MarkdownApp" -Dexec.args="--header src/test/resources/site/templates/header.html \
-    --footer src/test/resources/site/templates/footer.html --source src/test/resources/site/markdown --destination target/markdownj"
+    mvn exec:java -Dexec.mainClass="org.markdownj.extras.MarkdownApp" \
+    -Dexec.args="--header src/test/resources/site/templates/header.html \
+    --footer src/test/resources/site/templates/footer.html \
+    --source src/test/resources/site/markdown --destination target/markdownj"
 
 
 Licensing
