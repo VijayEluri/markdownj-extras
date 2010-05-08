@@ -14,16 +14,16 @@
 
 package org.markdownj.extras;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 /**
  * Integration test for MarkdownApp
@@ -36,7 +36,7 @@ public class AppTest {
 
     private String baseTestDestination;
 
-    @Before
+    @BeforeClass
     public void initData() {
 
         headerPath = resourceToPath("/site/templates/header.html");
@@ -67,8 +67,7 @@ public class AppTest {
         assertTrue(destinationFile.exists());
         assertEquals("<html>\n<h1>This is an H1</h1>\n\n<p>file.markdown</p>\n\n</html>\n", FileUtils.readFileFromPath(destinationFile.getPath()));
         File mdExtDestinationFile = new File(destination + "/sub/md-ext.html");
-        assertTrue(String.format("File with extension 'md' processed, but processable extensions list is: '%s'", extensions),
-                !mdExtDestinationFile.exists());
+        assertTrue(!mdExtDestinationFile.exists(), String.format("File with extension 'md' processed, but processable extensions list is: '%s'", extensions));
     }
     
     @Test
@@ -97,7 +96,7 @@ public class AppTest {
         app.setHeader(headerPath);
         app.setFooter(footerPath);
         app.process();
-        assertTrue("File with extension 'md' not processed", mdExtDestinationFile.exists());
+        assertTrue(mdExtDestinationFile.exists(), "File with extension 'md' not processed");
     }
 
     @Test
@@ -113,8 +112,7 @@ public class AppTest {
         exts.add("markdown");
         app.setProcessableExtensions(exts);
         app.process();
-        assertTrue(String.format("File with extension 'md' processed, but processable extensions are: %s", app.getProcessableExtensions()),
-                !mdExtDestinationFile.exists());
+        assertTrue(!mdExtDestinationFile.exists(), String.format("File with extension 'md' processed, but processable extensions are: %s", app.getProcessableExtensions())                );
     }
 
     @Test
@@ -128,7 +126,7 @@ public class AppTest {
         app.setFooter(footerPath);
         app.addProcessableExtension("md");
         app.process();
-        assertTrue("File with extension 'md' not processed", mdExtDestinationFile.exists());
+        assertTrue(mdExtDestinationFile.exists(), "File with extension 'md' not processed");
     }
 
     /**

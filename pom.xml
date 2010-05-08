@@ -2,7 +2,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.markdownj</groupId>
+  <groupId>com.github.enr</groupId>
   <artifactId>markdownj-extras</artifactId>
   <packaging>jar</packaging>
   <version>0.2-SNAPSHOT</version>
@@ -68,9 +68,9 @@
 
     <!-- testing -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.5</version>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>5.12.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

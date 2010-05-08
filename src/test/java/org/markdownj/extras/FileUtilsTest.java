@@ -14,19 +14,14 @@
 
 package org.markdownj.extras;
 
-import static org.junit.Assert.assertEquals;
+import static org.testng.Assert.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 /**
  * Integration test for MarkdownApp
  */
 public class FileUtilsTest {
-
-    @Before
-    public void initData() {
-    }
 
     @Test
     public void testExtension() {

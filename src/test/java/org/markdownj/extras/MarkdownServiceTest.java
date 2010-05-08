@@ -16,12 +16,14 @@ package org.markdownj.extras;
 
 import java.net.URL;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 import org.markdownj.extras.MarkdownService;
 import org.markdownj.extras.MarkdownServiceImpl;
 
-import static org.junit.Assert.*;
+
+
+import static org.testng.Assert.*;
 
 /**
  * 
@@ -41,7 +43,7 @@ public class MarkdownServiceTest {
 
     String expected;
 
-    @Before
+    @BeforeClass
     public void initData() {
         service = new MarkdownServiceImpl();
         headerUrl = this.getClass().getResource("/site/templates/header.html");
@@ -56,33 +58,33 @@ public class MarkdownServiceTest {
     public void testUsingPaths() {
         service.setHeaderPath(headerUrl.getPath());
         service.setFooterPath(footerUrl.getPath());
-        assertEquals(expected, service.process());
+        assertEquals(service.process(), expected);
     }
 
     @Test
     public void testUsingUrls() {
         service.setHeaderUrl(headerUrl);
         service.setFooterUrl(footerUrl);
-        assertEquals(expected, service.process());
+        assertEquals(service.process(), expected);
     }
 
     @Test
     public void testUsingStrings() {
         service.setHeader(String.format("<html>%s", MarkdownService.EOL));
         service.setFooter(String.format("%s</html>%s", MarkdownService.EOL, MarkdownService.EOL));
-        assertEquals(expected, service.process());
+        assertEquals(service.process(), expected);
     }
 
     @Test
     public void testOnlyContent() {
         String expectedForContentOnly = htmlContent + MarkdownService.EOL;
-        assertEquals(expectedForContentOnly, service.process());
+        assertEquals(service.process(), expectedForContentOnly);
     }
 
     @Test
     public void testWinEncoding() {
         service.setHeaderUrl(winEncodingHeaderUrl);
         service.setFooterUrl(footerUrl);
-        assertEquals(expected, service.process());
+        assertEquals(service.process(), expected);
     }
 }
