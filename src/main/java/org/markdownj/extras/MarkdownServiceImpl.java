@@ -45,9 +45,18 @@ public class MarkdownServiceImpl implements MarkdownService {
 
     public String process() {
         MarkdownProcessor processor = new MarkdownProcessor();
-        String hs = (header == null) ? "" : header;
-        String fs = (footer == null) ? "" : footer;
+        String hs = (header == null) ? "" : normalizeEol(header);
+        String fs = (footer == null) ? "" : normalizeEol(footer);
         return String.format("%s%s%s", hs, processor.markdown(content), fs);
+    }
+
+    private String normalizeEol(String text) {
+        if (text == null) {
+            return "";
+        }
+        String r = text.replaceAll("\\r\\n", "\n");
+        r = r.replaceAll("\\r", "\n");
+        return r;
     }
 
     public void setContent(String content) {
