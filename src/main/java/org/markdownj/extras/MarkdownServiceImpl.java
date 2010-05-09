@@ -40,11 +40,22 @@ public class MarkdownServiceImpl implements MarkdownService {
      */
     private String content;
 
+    /**
+     * The template (format string) used in code block rendering.
+     * It is a 'Format String' with two format specifiers for String.
+     * The first is used for 'lang' and the second for the actual code block.
+     *  
+     * @see: http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.html#syntax
+     *
+     */
+    private String codeBlockTemplate;
+
     public MarkdownServiceImpl() {
     }
 
     public String process() {
         MarkdownProcessor processor = new MarkdownProcessor();
+        processor.setCodeBlockTemplate(codeBlockTemplate);
         String hs = (header == null) ? "" : normalizeEol(header);
         String fs = (footer == null) ? "" : normalizeEol(footer);
         return String.format("%s%s%s", hs, processor.markdown(content), fs);
@@ -93,6 +104,14 @@ public class MarkdownServiceImpl implements MarkdownService {
 
     public void setHeader(String header) {
         this.header = header;
+    }
+
+    public String getCodeBlockTemplate() {
+        return codeBlockTemplate;
+    }
+
+    public void setCodeBlockTemplate(String codeBlockTemplate) {
+        this.codeBlockTemplate = codeBlockTemplate;
     }
 
 }
