@@ -14,16 +14,12 @@
 
 package org.markdownj.extras;
 
+import static org.testng.Assert.assertEquals;
+
 import java.net.URL;
 
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.markdownj.extras.MarkdownService;
-import org.markdownj.extras.MarkdownServiceImpl;
-
-
-
-import static org.testng.Assert.*;
 
 /**
  * 
@@ -43,7 +39,7 @@ public class MarkdownServiceTest {
 
     String expected;
 
-    @BeforeClass
+    @BeforeMethod
     public void initData() {
         service = new MarkdownServiceImpl();
         headerUrl = this.getClass().getResource("/site/templates/header.html");
@@ -51,11 +47,11 @@ public class MarkdownServiceTest {
         footerUrl = this.getClass().getResource("/site/templates/footer.html");
         expected = String.format("<html>%s%s%s%s</html>%s", MarkdownService.EOL, htmlContent, MarkdownService.EOL, MarkdownService.EOL,
                 MarkdownService.EOL);
-        service.setContent(markdownContent);
     }
 
     @Test
     public void testUsingPaths() {
+        service.setContent(markdownContent);
         service.setHeaderPath(headerUrl.getPath());
         service.setFooterPath(footerUrl.getPath());
         assertEquals(service.process(), expected);
@@ -63,6 +59,7 @@ public class MarkdownServiceTest {
 
     @Test
     public void testUsingUrls() {
+        service.setContent(markdownContent);
         service.setHeaderUrl(headerUrl);
         service.setFooterUrl(footerUrl);
         assertEquals(service.process(), expected);
@@ -70,6 +67,7 @@ public class MarkdownServiceTest {
 
     @Test
     public void testUsingStrings() {
+        service.setContent(markdownContent);
         service.setHeader(String.format("<html>%s", MarkdownService.EOL));
         service.setFooter(String.format("%s</html>%s", MarkdownService.EOL, MarkdownService.EOL));
         assertEquals(service.process(), expected);
@@ -77,14 +75,23 @@ public class MarkdownServiceTest {
 
     @Test
     public void testOnlyContent() {
+        service.setContent(markdownContent);
         String expectedForContentOnly = htmlContent + MarkdownService.EOL;
         assertEquals(service.process(), expectedForContentOnly);
     }
 
     @Test
     public void testWinEncoding() {
+        service.setContent(markdownContent);
         service.setHeaderUrl(winEncodingHeaderUrl);
         service.setFooterUrl(footerUrl);
         assertEquals(service.process(), expected);
+    }
+
+    @Test
+    public void testCodeBlockTemplateSetting() {
+        service.setContent("\tlang:java\n\tpackage my;\n");
+        service.setCodeBlockTemplate("<pre lang=\"%s\">%s</pre>");
+        assertEquals(service.process(), "<pre lang=\"java\">package my;</pre>\n");
     }
 }

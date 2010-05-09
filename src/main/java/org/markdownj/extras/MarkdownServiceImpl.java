@@ -55,7 +55,9 @@ public class MarkdownServiceImpl implements MarkdownService {
 
     public String process() {
         MarkdownProcessor processor = new MarkdownProcessor();
-        processor.setCodeBlockTemplate(codeBlockTemplate);
+        if (codeBlockTemplate != null) {
+            processor.setCodeBlockTemplate(codeBlockTemplate);
+        }
         String hs = (header == null) ? "" : normalizeEol(header);
         String fs = (footer == null) ? "" : normalizeEol(footer);
         return String.format("%s%s%s", hs, processor.markdown(content), fs);

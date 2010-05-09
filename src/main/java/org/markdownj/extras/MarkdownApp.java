@@ -85,6 +85,8 @@ public class MarkdownApp {
      * 
      */
     private String footer;
+    
+    private String codeBlockTemplate;
 
     /**
      * Only files with extension in list will be processed.
@@ -159,6 +161,9 @@ public class MarkdownApp {
         File sourceFile = new File(getSource());
         markdown.setHeaderPath(getHeader());
         markdown.setFooterPath(getFooter());
+        if (getCodeBlockTemplate() != null) {
+            markdown.setCodeBlockTemplate(getCodeBlockTemplate());
+        }
         try {
             traverse(sourceFile);
         } catch (IOException e) {
@@ -240,6 +245,14 @@ public class MarkdownApp {
 
     public void setFooter(String footer) {
         this.footer = footer;
+    }
+
+    public String getCodeBlockTemplate() {
+        return codeBlockTemplate;
+    }
+
+    public void setCodeBlockTemplate(String codeBlockTemplate) {
+        this.codeBlockTemplate = codeBlockTemplate;
     }
 
     public List<String> getProcessableExtensions() {

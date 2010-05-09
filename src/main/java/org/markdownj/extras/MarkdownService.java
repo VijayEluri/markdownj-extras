@@ -40,6 +40,8 @@ public interface MarkdownService {
     void setContent(String content);
 
     void setFooter(String footer);
+    
+    void setCodeBlockTemplate(String codeBlockTemplate);
 
     /**
      * Transforms the markdown content in html, adding header and footer.
