@@ -44,9 +44,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.markdownj</groupId>
+      <groupId>com.github.enr.markdownj</groupId>
       <artifactId>markdownj-core</artifactId>
-      <version>0.4-SNAPSHOT</version>
+      <version>0.4.M20100509</version>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>
