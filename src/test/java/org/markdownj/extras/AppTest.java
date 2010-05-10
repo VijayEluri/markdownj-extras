@@ -38,11 +38,9 @@ public class AppTest {
 
     @BeforeClass
     public void initData() {
-
         headerPath = resourceToPath("/site/templates/header.html");
         footerPath = resourceToPath("/site/templates/footer.html");
         sourcePath = resourceToPath("/site/markdown");
-
         baseTestDestination = "target/markdownj";
     }
 
@@ -53,23 +51,24 @@ public class AppTest {
         MarkdownApp.main(args);
         File destinationFile = new File(destination + "/sub/file.html");
         assertTrue(destinationFile.exists());
-        assertEquals("<html>\n<h1>This is an H1</h1>\n\n<p>file.markdown</p>\n\n</html>\n", FileUtils.readFileFromPath(destinationFile.getPath()));
+        assertEquals(FileUtils.readFileFromPath(destinationFile.getPath()), "<html>\n<h1>This is an H1</h1>\n\n<p>file.markdown</p>\n\n</html>\n");
     }
-
 
     @Test
     public void testMainMethodCallWithExtensionsArgument() {
         String destination = buildDestinationDir("testMainMethodCallWithExtensionsArgument");
         String extensions = "markdown,text";
-        String[] args = { "--source", sourcePath, "--destination", destination, "--header", headerPath, "--footer", footerPath, "--extensions", extensions};
+        String[] args = { "--source", sourcePath, "--destination", destination, "--header", headerPath, "--footer", footerPath, "--extensions",
+                extensions };
         MarkdownApp.main(args);
         File destinationFile = new File(destination + "/sub/file.html");
         assertTrue(destinationFile.exists());
-        assertEquals("<html>\n<h1>This is an H1</h1>\n\n<p>file.markdown</p>\n\n</html>\n", FileUtils.readFileFromPath(destinationFile.getPath()));
+        assertEquals(FileUtils.readFileFromPath(destinationFile.getPath()), "<html>\n<h1>This is an H1</h1>\n\n<p>file.markdown</p>\n\n</html>\n");
         File mdExtDestinationFile = new File(destination + "/sub/md-ext.html");
-        assertTrue(!mdExtDestinationFile.exists(), String.format("File with extension 'md' processed, but processable extensions list is: '%s'", extensions));
+        assertTrue(!mdExtDestinationFile.exists(), String.format("File with extension 'md' processed, but processable extensions list is: '%s'",
+                extensions));
     }
-    
+
     @Test
     public void testProgrammaticCall() {
         String destination = buildDestinationDir("testProgrammaticCall");
@@ -81,7 +80,7 @@ public class AppTest {
         app.process();
         File destinationFile = new File(destination + "/sub/file.html");
         assertTrue(destinationFile.exists());
-        assertEquals("<html>\n<h1>This is an H1</h1>\n\n<p>file.markdown</p>\n\n</html>\n", FileUtils.readFileFromPath(destinationFile.getPath()));
+        assertEquals(FileUtils.readFileFromPath(destinationFile.getPath()), "<html>\n<h1>This is an H1</h1>\n\n<p>file.markdown</p>\n\n</html>\n");
         File mdExtDestinationFile = new File(destination + "/sub/md-ext.html");
         assertTrue(mdExtDestinationFile.exists());
     }
@@ -112,7 +111,8 @@ public class AppTest {
         exts.add("markdown");
         app.setProcessableExtensions(exts);
         app.process();
-        assertTrue(!mdExtDestinationFile.exists(), String.format("File with extension 'md' processed, but processable extensions are: %s", app.getProcessableExtensions())                );
+        assertTrue(!mdExtDestinationFile.exists(), String.format("File with extension 'md' processed, but processable extensions are: %s", app
+                .getProcessableExtensions()));
     }
 
     @Test
@@ -127,6 +127,18 @@ public class AppTest {
         app.addProcessableExtension("md");
         app.process();
         assertTrue(mdExtDestinationFile.exists(), "File with extension 'md' not processed");
+    }
+
+    @Test
+    public void testCodeBlockTemplate() {
+        String destination = buildDestinationDir("testCodeBlockTemplate");
+        String template = "<pre lang=\"%s\">%s</pre>";
+        String s = sourcePath+"/code";
+        String[] args = { "--source", s, "--destination", destination, "--code-template", template };
+        MarkdownApp.main(args);
+        File destinationFile = new File(destination + "/java.html");
+        assertTrue(destinationFile.exists());
+        assertEquals(FileUtils.readFileFromPath(destinationFile.getPath()), "<p>code:<pre lang=\"java\">import org.markdownj.*;</pre></p>\n");
     }
 
     /**
