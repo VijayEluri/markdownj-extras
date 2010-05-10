@@ -19,16 +19,24 @@ Features
     A basic application which uses MarkdownService to process recursively the markdown files in a given directory.
 
 
+Prerequisites
+-------------
+
+Maven install of git://github.com/enr/markdownj-extras.git version 0.4.M20100509.
+
+
 Markdown App
 ------------
 
 Usage (after mvn clean install):
 
-    mvn exec:java -Dexec.mainClass="org.markdownj.extras.MarkdownApp" \
-    -Dexec.args="--header src/test/resources/site/templates/header.html \
-    --footer src/test/resources/site/templates/footer.html \
-    --source src/test/resources/site/markdown --destination target/markdownj"
+    mvn exec:java -Dexec.mainClass="com.github.enr.markdownj.extras.MarkdownApp" \
+    -Dexec.args="--header src/test/resources/site/templates/header.html          \
+    --footer src/test/resources/site/templates/footer.html                       \
+    --source src/test/resources/site/markdown                                    \
+    --destination target/markdownj-extras"
 
+Now you can see results in target/markdownj-extras directory.
 
 Licensing
 ---------
