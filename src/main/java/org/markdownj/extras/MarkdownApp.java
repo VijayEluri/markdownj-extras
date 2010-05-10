@@ -30,10 +30,6 @@ import org.apache.commons.cli.PosixParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// mvn exec:java -Dexec.mainClass="org.markdownj.extras.MarkdownApp"
-// -Dexec.args="--header src/test/resources/header.html --footer
-// src/test/resources/footer.html --source src/test/resources/site --destination
-// target/markdownj"
 
 /**
  * Markdown app. Transforms in html every file found in source dir, maintaining
@@ -41,10 +37,11 @@ import org.slf4j.LoggerFactory;
  * 
  * mvn exec:java -Dexec.mainClass="org.markdownj.extras.MarkdownApp"
  * 
- * mvn exec:java -Dexec.mainClass="org.markdownj.extras.MarkdownApp" \
- * -Dexec.args="--header src/test/resources/header.html --footer
- * src/test/resources/footer.html \ --source src/test/resources/site
- * --destination target/markdownj"
+ * mvn exec:java -Dexec.mainClass="org.markdownj.extras.MarkdownApp"
+ * -Dexec.args="--header src/test/resources/site/templates/header.html
+ * --footer src/test/resources/site/templates/footer.html
+ * --source src/test/resources/site/markdown
+ * --destination target/markdownj-extras"
  * 
  */
 public class MarkdownApp {
@@ -86,6 +83,10 @@ public class MarkdownApp {
      */
     private String footer;
     
+    /**
+     * The format string used to render code blocks.
+     * 
+     */
     private String codeBlockTemplate;
 
     /**
@@ -104,6 +105,7 @@ public class MarkdownApp {
         options.addOption("d", "destination", true, "The destination directory for html files");
         options.addOption("h", "header", true, "The path to the html header file");
         options.addOption("f", "footer", true, "The path to the html footer file");
+        options.addOption("t", "code-template", true, "The template for code blocks");
         options.addOption("e", "extensions", true, "A comma separated list of file extensions to process. If setted, files with extension not in list won't be processed");
         HelpFormatter formatter = new HelpFormatter();
         String helpHeader = String.format("%s", MarkdownApp.class.getName());
@@ -150,6 +152,9 @@ public class MarkdownApp {
         if (commandLine.hasOption("footer")) {
             setFooter(commandLine.getOptionValue("footer"));
         }
+        if (commandLine.hasOption("code-template")) {
+            setCodeBlockTemplate(commandLine.getOptionValue("code-template"));
+        }
         if (commandLine.hasOption("extensions")) {
             List<String> exts = extensionsToList(commandLine.getOptionValue("extensions"));
             setProcessableExtensions(exts);
@@ -159,8 +164,12 @@ public class MarkdownApp {
 
     public void process() {
         File sourceFile = new File(getSource());
-        markdown.setHeaderPath(getHeader());
-        markdown.setFooterPath(getFooter());
+        if (getHeader() != null) {
+            markdown.setHeaderPath(getHeader());
+        }
+        if (getFooter() != null) {
+            markdown.setFooterPath(getFooter());
+        }
         if (getCodeBlockTemplate() != null) {
             markdown.setCodeBlockTemplate(getCodeBlockTemplate());
         }
