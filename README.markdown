@@ -24,6 +24,8 @@ Prerequisites
 
 Maven install of git://github.com/enr/markdownj-extras.git version 0.4.M20100509.
 
+    wget 'http://github.com/enr/markdownj/tarball/0.4.M20100509'
+
 
 Markdown App
 ------------
