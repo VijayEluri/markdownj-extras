@@ -5,4 +5,5 @@
 _site
 nbproject/private
 profiles.xml
+*~
 target
