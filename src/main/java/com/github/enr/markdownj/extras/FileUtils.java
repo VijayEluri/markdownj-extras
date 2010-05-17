@@ -14,13 +14,8 @@
 
 package com.github.enr.markdownj.extras;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.net.URISyntaxException;
 import java.net.URL;
 
@@ -35,34 +30,31 @@ public class FileUtils {
      */
     private FileUtils() {}
 
-    public static String readFile(FileReader reader) throws IOException {
-        BufferedReader br = new BufferedReader(reader);
-        String nextLine = "";
-        StringBuffer sb = new StringBuffer();
-        while ((nextLine = br.readLine()) != null) {
-            sb.append(nextLine);
-            sb.append(MarkdownService.EOL);
-        }
-        return sb.toString();
-    }
-
     /**
-     * Returns file content as string, reading from a path. Throws runtime
-     * exception in case of FileNotFoundException or IOException.
+     * Returns file content as string, reading from a path. 
+     * Throws runtime exception in case of FileNotFoundException or IOException.
      * 
      * @param filename the path to the file to read.
      * @return File content as string.
      */
     public static String readFileFromPath(String filename) {
-        String fileContent = "";
-        try {
-            fileContent = readFile(new FileReader(filename));
-        } catch (IOException e) {
-            throw new RuntimeException("Error reading " + filename, e);
-        }
-        return fileContent;
+        return readFileFromPath(filename, null);
     }
 
+    /**
+     * 
+     * @param filename
+     * @param encoding the encoding to use, null means platform default
+     * @return
+     */
+    public static String readFileFromPath(String filename, String encoding) {
+        try {
+            return org.apache.commons.io.FileUtils.readFileToString(new File(filename), encoding);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
     public static File fileFromUrl(URL url) {
         File f = null;
         try {
@@ -83,7 +75,7 @@ public class FileUtils {
     public static String readFileFromUrl(URL fileurl) {
         String fileContent = "";
         try {
-            fileContent = readFile(new FileReader(fileFromUrl(fileurl)));
+            fileContent = org.apache.commons.io.FileUtils.readFileToString(fileFromUrl(fileurl));
         } catch (IOException e) {
             throw new RuntimeException("Error reading " + fileurl, e);
         }
@@ -91,23 +83,36 @@ public class FileUtils {
     }
 
     /**
-     * Writes a string to the specified file. If the file path doesn't exist,
-     * it's created. If the file exists, it is overwritten.
+     * Writes a string to the specified file using the default encoding.
+     * 
+     * If the file path doesn't exist, it's created.
+     * If the file exists, it is overwritten.
      * 
      * @param filePath the path to the file.
      * @param text the string to write.
      * @throws IOException
      */
     public static void writeFile(String filePath, String text) throws IOException {
-        Writer output = null;
+        writeFile(filePath, text, null);
+    }
+
+    /**
+     * Writes a string to the specified file using the specified encoding.
+     * 
+     * If the file path doesn't exist, it's created.
+     * If the file exists, it is overwritten.
+     * 
+     * @param filePath the path to the file.
+     * @param text the string to write.
+     * @throws IOException
+     */
+    public static void writeFile(String filePath, String text, String encoding) throws IOException {
         File file = new File(filePath);
         File parent = file.getParentFile();
         if (!parent.exists()) {
             parent.mkdirs();
         }
-        output = new BufferedWriter(new FileWriter(file));
-        output.write(text);
-        output.close();
+        org.apache.commons.io.FileUtils.writeStringToFile(file, text, encoding);
     }
 
     /**
