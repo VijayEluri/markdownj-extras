@@ -15,6 +15,7 @@
 package com.github.enr.markdownj.extras;
 
 import java.net.URL;
+import java.util.Map;
 
 import com.petebevin.markdown.MarkdownProcessor;
 
@@ -49,6 +50,18 @@ public class MarkdownServiceImpl implements MarkdownService {
      *
      */
     private String codeBlockTemplate;
+    
+    /**
+     * @see com.petebevin.markdown.Entities
+     */
+    private Map<Character, String> htmlEntities;
+    
+    /**
+     * The encoding to use.
+     * null means platform default.
+     * 
+     */
+    private String encoding;
 
     public MarkdownServiceImpl() {
     }
@@ -57,6 +70,9 @@ public class MarkdownServiceImpl implements MarkdownService {
         MarkdownProcessor processor = new MarkdownProcessor();
         if (codeBlockTemplate != null) {
             processor.setCodeBlockTemplate(codeBlockTemplate);
+        }
+        if (htmlEntities != null) {
+            processor.setHtmlEntities(htmlEntities);
         }
         String hs = (header == null) ? "" : normalizeEol(header);
         String fs = (footer == null) ? "" : normalizeEol(footer);
@@ -77,7 +93,7 @@ public class MarkdownServiceImpl implements MarkdownService {
     }
 
     public void setContentPath(String path) {
-        content = FileUtils.readFileFromPath(path);
+        content = FileUtils.readFileFromPath(path, encoding);
     }
 
     public void setContentUrl(URL url) {
@@ -85,7 +101,7 @@ public class MarkdownServiceImpl implements MarkdownService {
     }
 
     public void setFooterPath(String path) {
-        footer = FileUtils.readFileFromPath(path);
+        footer = FileUtils.readFileFromPath(path, encoding);
     }
 
     public void setFooterUrl(URL url) {
@@ -93,7 +109,7 @@ public class MarkdownServiceImpl implements MarkdownService {
     }
 
     public void setHeaderPath(String path) {
-        header = FileUtils.readFileFromPath(path);
+        header = FileUtils.readFileFromPath(path, encoding);
     }
 
     public void setHeaderUrl(URL url) {
@@ -114,6 +130,18 @@ public class MarkdownServiceImpl implements MarkdownService {
 
     public void setCodeBlockTemplate(String codeBlockTemplate) {
         this.codeBlockTemplate = codeBlockTemplate;
+    }
+
+    public void setHtmlEntities(Map<Character, String> htmlEntities) {
+        this.htmlEntities = htmlEntities;
+    }
+
+    public String getEncoding() {
+        return encoding;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
     }
 
 }

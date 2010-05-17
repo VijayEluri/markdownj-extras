@@ -15,6 +15,7 @@
 package com.github.enr.markdownj.extras;
 
 import java.net.URL;
+import java.util.Map;
 
 public interface MarkdownService {
 
@@ -49,4 +50,8 @@ public interface MarkdownService {
      * @return the html string.
      */
     String process();
+
+    void setHtmlEntities(Map<Character, String> htmlEntities);
+
+    void setEncoding(String encoding);
 }

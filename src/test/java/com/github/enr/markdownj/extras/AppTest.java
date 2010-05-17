@@ -18,10 +18,13 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -32,6 +35,15 @@ import com.github.enr.markdownj.extras.MarkdownApp;
  * Integration test for MarkdownApp
  */
 public class AppTest {
+
+    static private Logger logger;
+
+    @SuppressWarnings("static-access")
+    protected Logger log() {
+        if (this.logger == null)
+            this.logger = LoggerFactory.getLogger(this.getClass());
+        return this.logger;
+    }
 
     private String headerPath;
     private String footerPath;
@@ -54,7 +66,7 @@ public class AppTest {
         MarkdownApp.main(args);
         File destinationFile = new File(destination + "/sub/file.html");
         assertTrue(destinationFile.exists());
-        assertEquals(FileUtils.readFileFromPath(destinationFile.getPath()), "<html>\n<h1>This is an H1</h1>\n\n<p>file.markdown</p>\n\n</html>\n");
+        assertEquals(readCreatedFile(destinationFile), "<html>\n<h1>This is an H1</h1>\n\n<p>file.markdown</p>\n\n</html>\n");
     }
 
     @Test
@@ -66,7 +78,7 @@ public class AppTest {
         MarkdownApp.main(args);
         File destinationFile = new File(destination + "/sub/file.html");
         assertTrue(destinationFile.exists());
-        assertEquals(FileUtils.readFileFromPath(destinationFile.getPath()), "<html>\n<h1>This is an H1</h1>\n\n<p>file.markdown</p>\n\n</html>\n");
+        assertEquals(readCreatedFile(destinationFile), "<html>\n<h1>This is an H1</h1>\n\n<p>file.markdown</p>\n\n</html>\n");
         File mdExtDestinationFile = new File(destination + "/sub/md-ext.html");
         assertTrue(!mdExtDestinationFile.exists(), String.format("File with extension 'md' processed, but processable extensions list is: '%s'",
                 extensions));
@@ -83,7 +95,7 @@ public class AppTest {
         app.process();
         File destinationFile = new File(destination + "/sub/file.html");
         assertTrue(destinationFile.exists());
-        assertEquals(FileUtils.readFileFromPath(destinationFile.getPath()), "<html>\n<h1>This is an H1</h1>\n\n<p>file.markdown</p>\n\n</html>\n");
+        assertEquals(readCreatedFile(destinationFile), "<html>\n<h1>This is an H1</h1>\n\n<p>file.markdown</p>\n\n</html>\n");
         File mdExtDestinationFile = new File(destination + "/sub/md-ext.html");
         assertTrue(mdExtDestinationFile.exists());
     }
@@ -136,12 +148,30 @@ public class AppTest {
     public void testCodeBlockTemplate() {
         String destination = buildDestinationDir("testCodeBlockTemplate");
         String template = "<pre lang=\"%s\">%s</pre>";
-        String s = sourcePath+"/code";
+        String s = sourcePath + "/code";
         String[] args = { "--source", s, "--destination", destination, "--code-template", template };
         MarkdownApp.main(args);
         File destinationFile = new File(destination + "/java.html");
         assertTrue(destinationFile.exists());
-        assertEquals(FileUtils.readFileFromPath(destinationFile.getPath()), "<p>code:<pre lang=\"java\">import org.markdownj.*;</pre></p>\n");
+        assertEquals(readCreatedFile(destinationFile), "<p>code:<pre lang=\"java\">import org.markdownj.*;</pre></p>\n");
+    }
+
+    @Test
+    public void testStrictHtmlEncoding() {
+        String destination = buildDestinationDir("testStrictHtmlEncoding");
+
+        MarkdownApp app = new MarkdownApp();
+        app.setSource(sourcePath);
+        app.setDestination(destination);
+        app.setHeader(headerPath);
+        app.setFooter(footerPath);
+        app.strictHtmlEncoding();
+        app.setCharEncoding("UTF-8");
+        app.process();
+        File destinationFile = new File(destination + "/entities.html");
+        assertTrue(destinationFile.exists());
+        String results = readCreatedFile(destinationFile);
+        assertEquals(results, "<html>\n<h1>This is H1</h1>\n\n<p>4 &#163; for a &#224;</p>\n\n<pre><code>and n&#242;w &#236;s code\n</code></pre>\n\n<p>the end!</p>\n\n</html>\n");
     }
 
     /**
@@ -165,6 +195,20 @@ public class AppTest {
     private String buildDestinationDir(String id) {
         String destination = baseTestDestination + "/" + id;
         return destination;
+    }
+
+    private String readCreatedFile(File afile) {
+        String text;
+        try {
+            text = org.apache.commons.io.FileUtils.readFileToString(afile, "UTF-8");
+            // Standardize line endings:
+            text = text.replaceAll("\\r\\n", "\n"); // DOS to Unix
+            text = text.replaceAll("\\r", "\n"); // Mac to Unix
+            text = text.replaceAll("^[ \\t]+$", "");
+            return text;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

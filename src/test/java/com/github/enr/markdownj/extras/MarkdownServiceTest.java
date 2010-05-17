@@ -23,6 +23,7 @@ import org.testng.annotations.Test;
 
 import com.github.enr.markdownj.extras.MarkdownService;
 import com.github.enr.markdownj.extras.MarkdownServiceImpl;
+import com.petebevin.markdown.Entities;
 
 /**
  * 
@@ -96,5 +97,12 @@ public class MarkdownServiceTest {
         service.setContent("\tlang:java\n\tpackage my;\n");
         service.setCodeBlockTemplate("<pre lang=\"%s\">%s</pre>");
         assertEquals(service.process(), "<pre lang=\"java\">package my;</pre>\n");
+    }
+
+    @Test
+    public void testHtmlEntities() {
+        service.setContent("I'am an ò & <>");
+        service.setHtmlEntities(Entities.HTML_401);
+        assertEquals(service.process(), "<p>I'am an &#242; &#38; &#60;&#62;</p>\n");
     }
 }

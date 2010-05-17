@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -29,6 +30,8 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.petebevin.markdown.Entities;
 
 
 /**
@@ -88,11 +91,23 @@ public class MarkdownApp {
      * 
      */
     private String codeBlockTemplate;
+    
+    /**
+     * @see com.petebevin.markdown.Entities
+     */
+    private Map<Character, String> htmlEntities;
 
     /**
      * Only files with extension in list will be processed.
      */
     private List<String> processableExtensions = new ArrayList<String>();
+    
+    /**
+     * Character encoding to write and read files.
+     * null means platform default.
+     * 
+     */
+    private String charEncoding;
 
     private MarkdownService markdown = new MarkdownServiceImpl();
 
@@ -107,6 +122,7 @@ public class MarkdownApp {
         options.addOption("f", "footer", true, "The path to the html footer file");
         options.addOption("t", "code-template", true, "The template for code blocks");
         options.addOption("e", "extensions", true, "A comma separated list of file extensions to process. If setted, files with extension not in list won't be processed");
+        options.addOption("c", "char-encoding", true, "The encoding to read and write files");
         HelpFormatter formatter = new HelpFormatter();
         String helpHeader = String.format("%s", MarkdownApp.class.getName());
         try {
@@ -159,6 +175,9 @@ public class MarkdownApp {
             List<String> exts = extensionsToList(commandLine.getOptionValue("extensions"));
             setProcessableExtensions(exts);
         }
+        if (commandLine.hasOption("char-encoding")) {
+            setCharEncoding(commandLine.getOptionValue("char-encoding"));
+        }
         process();
     }
 
@@ -172,6 +191,12 @@ public class MarkdownApp {
         }
         if (getCodeBlockTemplate() != null) {
             markdown.setCodeBlockTemplate(getCodeBlockTemplate());
+        }
+        if (getHtmlEntities() != null) {
+            markdown.setHtmlEntities(getHtmlEntities());
+        }
+        if (getCharEncoding() != null) {
+            markdown.setEncoding(getCharEncoding());
         }
         try {
             traverse(sourceFile);
@@ -192,17 +217,17 @@ public class MarkdownApp {
     }
 
     public void processFile(final File f) {
-        String mdFilepath = FileUtils.normalizedPath(f.getAbsolutePath());
-        String df = mdFilepath.replaceFirst(source, destination);
+        String mdFilePath = FileUtils.normalizedPath(f.getAbsolutePath());
+        String df = mdFilePath.replaceFirst(source, destination);
         String extension = FileUtils.extension(df);
         if ((getProcessableExtensions().size() == 0) || (getProcessableExtensions().contains(extension))) {
             String destinationFile = FileUtils.changeExtension(df, ".html");
-            log().debug("process '{}' -> '{}'", mdFilepath, destinationFile);
-            String markdownContent = FileUtils.readFileFromPath(mdFilepath);
-            markdown.setContent(markdownContent);
-            String html = markdown.process();
+            log().debug("process '{}' -> '{}'", mdFilePath, destinationFile);
             try {
-                FileUtils.writeFile(destinationFile, html);
+                String markdownContent = FileUtils.readFileFromPath(mdFilePath, getCharEncoding());
+                markdown.setContent(markdownContent);
+                String html = markdown.process();
+                FileUtils.writeFile(destinationFile, html, getCharEncoding());
             } catch (IOException e) {
                 log().warn(e.getMessage(), e);
             }
@@ -274,6 +299,27 @@ public class MarkdownApp {
 
     public void addProcessableExtension(String extension) {
         this.processableExtensions.add(extension);
+    }
+
+    public Map<Character, String> getHtmlEntities() {
+        return htmlEntities;
+    }
+
+    public void setHtmlEntities(Map<Character, String> htmlEntities) {
+        this.htmlEntities = htmlEntities;
+    }
+    
+    public void strictHtmlEncoding()
+    {
+        this.htmlEntities = Entities.HTML_401;
+    }
+
+    public String getCharEncoding() {
+        return charEncoding;
+    }
+
+    public void setCharEncoding(String charEncoding) {
+        this.charEncoding = charEncoding;
     }
 
 }
