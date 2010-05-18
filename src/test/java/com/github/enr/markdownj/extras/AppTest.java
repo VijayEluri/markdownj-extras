@@ -174,6 +174,25 @@ public class AppTest {
         assertEquals(results, "<html>\n<h1>This is H1</h1>\n\n<p>4 &#163; for a &#224;</p>\n\n<pre><code>and n&#242;w &#236;s code\n</code></pre>\n\n<p>the end!</p>\n\n</html>\n");
     }
 
+
+    @Test
+    public void testAdvancedSyntaxAndStrictHtmlEncoding() {
+        String destination = buildDestinationDir("testAdvancedSyntaxAndStrictHtmlEncoding");
+
+        MarkdownApp app = new MarkdownApp();
+        app.setSource(sourcePath);
+        app.setDestination(destination);
+        app.setHeader(headerPath);
+        app.setFooter(footerPath);
+        app.strictHtmlEncoding();
+        app.setCharEncoding("UTF-8");
+        app.process();
+        File destinationFile = new File(destination + "/syntax.html");
+        assertTrue(destinationFile.exists());
+        String results = readCreatedFile(destinationFile);
+        assertEquals(results, "<html>\n<p>Xite is a tool for static site generation from source files which can be in various formats.</p>\n\n<a href=\"http://daringfireball.net/projects/markdown\" title=\"Markdown\">Markdown</a> syntax.\n\n<p>Another <a href=\"http://example.tld\">http://example.tld</a> link</p>\n\n</html>\n");
+    }
+    
     /**
      * Utility method to resolve path to resources.
      * 
