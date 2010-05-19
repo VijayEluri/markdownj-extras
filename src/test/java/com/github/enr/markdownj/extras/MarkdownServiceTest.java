@@ -102,7 +102,7 @@ public class MarkdownServiceTest {
     @Test
     public void testHtmlEntities() {
         service.setContent("I'am an ò & <>");
-        service.setHtmlEntities(Entities.HTML_401);
-        assertEquals(service.process(), "<p>I'am an &#242; &#38; &#60;&#62;</p>\n");
+        service.setHtmlEntities(Entities.HTML_401_NO_TAG);
+        assertEquals(service.process(), "<p>I'am an &#242; &amp; &lt;></p>\n");
     }
 }

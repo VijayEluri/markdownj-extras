@@ -311,7 +311,7 @@ public class MarkdownApp {
     
     public void strictHtmlEncoding()
     {
-        this.htmlEntities = Entities.HTML_401;
+        this.htmlEntities = Entities.HTML_401_NO_TAG;
     }
 
     public String getCharEncoding() {

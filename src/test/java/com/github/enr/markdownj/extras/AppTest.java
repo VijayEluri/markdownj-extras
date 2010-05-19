@@ -190,7 +190,7 @@ public class AppTest {
         File destinationFile = new File(destination + "/syntax.html");
         assertTrue(destinationFile.exists());
         String results = readCreatedFile(destinationFile);
-        assertEquals(results, "<html>\n<p>Xite is a tool for static site generation from source files which can be in various formats.</p>\n\n<a href=\"http://daringfireball.net/projects/markdown\" title=\"Markdown\">Markdown</a> syntax.\n\n<p>Another <a href=\"http://example.tld\">http://example.tld</a> link</p>\n\n</html>\n");
+        assertEquals(results, "<html>\n<p>Xite is a tool for static site generation from source files which can be in various formats.</p>\n\n<p><a href=\"http://daringfireball.net/projects/markdown\" title=\"Markdown\">Markdown</a> syntax.</p>\n\n<p>Another <a href=\"http://example.tld\">http://example.tld</a> link</p>\n\n</html>\n");
     }
     
     /**
