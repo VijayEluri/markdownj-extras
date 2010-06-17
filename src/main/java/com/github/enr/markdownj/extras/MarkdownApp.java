@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -30,8 +29,6 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.petebevin.markdown.Entities;
 
 
 /**
@@ -91,11 +88,6 @@ public class MarkdownApp {
      * 
      */
     private String codeBlockTemplate;
-    
-    /**
-     * @see com.petebevin.markdown.Entities
-     */
-    private Map<Character, String> htmlEntities;
 
     /**
      * Only files with extension in list will be processed.
@@ -191,9 +183,6 @@ public class MarkdownApp {
         }
         if (getCodeBlockTemplate() != null) {
             markdown.setCodeBlockTemplate(getCodeBlockTemplate());
-        }
-        if (getHtmlEntities() != null) {
-            markdown.setHtmlEntities(getHtmlEntities());
         }
         if (getCharEncoding() != null) {
             markdown.setEncoding(getCharEncoding());
@@ -299,19 +288,6 @@ public class MarkdownApp {
 
     public void addProcessableExtension(String extension) {
         this.processableExtensions.add(extension);
-    }
-
-    public Map<Character, String> getHtmlEntities() {
-        return htmlEntities;
-    }
-
-    public void setHtmlEntities(Map<Character, String> htmlEntities) {
-        this.htmlEntities = htmlEntities;
-    }
-    
-    public void strictHtmlEncoding()
-    {
-        this.htmlEntities = Entities.HTML_401_NO_TAG;
     }
 
     public String getCharEncoding() {

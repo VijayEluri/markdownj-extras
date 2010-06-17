@@ -72,10 +72,10 @@ public class FileUtils {
      * @param fileurl the url of the file to read.
      * @return file content as string.
      */
-    public static String readFileFromUrl(URL fileurl) {
+    public static String readFileFromUrl(URL fileurl, String encoding) {
         String fileContent = "";
         try {
-            fileContent = org.apache.commons.io.FileUtils.readFileToString(fileFromUrl(fileurl));
+            fileContent = org.apache.commons.io.FileUtils.readFileToString(fileFromUrl(fileurl), encoding);
         } catch (IOException e) {
             throw new RuntimeException("Error reading " + fileurl, e);
         }

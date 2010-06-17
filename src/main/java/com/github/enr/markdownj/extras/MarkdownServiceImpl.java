@@ -52,11 +52,6 @@ public class MarkdownServiceImpl implements MarkdownService {
     private String codeBlockTemplate;
     
     /**
-     * @see com.petebevin.markdown.Entities
-     */
-    private Map<Character, String> htmlEntities;
-    
-    /**
      * The encoding to use.
      * null means platform default.
      * 
@@ -70,9 +65,6 @@ public class MarkdownServiceImpl implements MarkdownService {
         MarkdownProcessor processor = new MarkdownProcessor();
         if (codeBlockTemplate != null) {
             processor.setCodeBlockTemplate(codeBlockTemplate);
-        }
-        if (htmlEntities != null) {
-            processor.setHtmlEntities(htmlEntities);
         }
         String hs = (header == null) ? "" : normalizeEol(header);
         String fs = (footer == null) ? "" : normalizeEol(footer);
@@ -97,7 +89,7 @@ public class MarkdownServiceImpl implements MarkdownService {
     }
 
     public void setContentUrl(URL url) {
-        content = FileUtils.readFileFromUrl(url);
+        content = FileUtils.readFileFromUrl(url, encoding);
     }
 
     public void setFooterPath(String path) {
@@ -105,7 +97,7 @@ public class MarkdownServiceImpl implements MarkdownService {
     }
 
     public void setFooterUrl(URL url) {
-        footer = FileUtils.readFileFromUrl(url);
+        footer = FileUtils.readFileFromUrl(url, encoding);
     }
 
     public void setHeaderPath(String path) {
@@ -113,7 +105,7 @@ public class MarkdownServiceImpl implements MarkdownService {
     }
 
     public void setHeaderUrl(URL url) {
-        header = FileUtils.readFileFromUrl(url);
+        header = FileUtils.readFileFromUrl(url, encoding);
     }
 
     public void setFooter(String footer) {
@@ -130,10 +122,6 @@ public class MarkdownServiceImpl implements MarkdownService {
 
     public void setCodeBlockTemplate(String codeBlockTemplate) {
         this.codeBlockTemplate = codeBlockTemplate;
-    }
-
-    public void setHtmlEntities(Map<Character, String> htmlEntities) {
-        this.htmlEntities = htmlEntities;
     }
 
     public String getEncoding() {

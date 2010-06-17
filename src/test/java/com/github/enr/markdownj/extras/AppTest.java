@@ -157,34 +157,32 @@ public class AppTest {
     }
 
     @Test
-    public void testStrictHtmlEncoding() {
-        String destination = buildDestinationDir("testStrictHtmlEncoding");
+    public void testSpecialChars() {
+        String destination = buildDestinationDir("testSpecialChars");
 
         MarkdownApp app = new MarkdownApp();
         app.setSource(sourcePath);
         app.setDestination(destination);
         app.setHeader(headerPath);
         app.setFooter(footerPath);
-        app.strictHtmlEncoding();
         app.setCharEncoding("UTF-8");
         app.process();
         File destinationFile = new File(destination + "/entities.html");
         assertTrue(destinationFile.exists());
         String results = readCreatedFile(destinationFile);
-        assertEquals(results, "<html>\n<h1>This is H1</h1>\n\n<p>4 &#163; for a &#224;</p>\n\n<pre><code>and n&#242;w &#236;s code\n</code></pre>\n\n<p>the end!</p>\n\n</html>\n");
+        assertEquals(results, "<html>\n<h1>This is H1</h1>\n\n<p>4 £ for a à</p>\n\n<pre><code>and nòw ìs code\n</code></pre>\n\n<p>the end!</p>\n\n</html>\n");
     }
 
 
     @Test
-    public void testAdvancedSyntaxAndStrictHtmlEncoding() {
-        String destination = buildDestinationDir("testAdvancedSyntaxAndStrictHtmlEncoding");
+    public void testAdvancedSyntaxAndSpecialChars() {
+        String destination = buildDestinationDir("testAdvancedSyntaxAndSpecialChars");
 
         MarkdownApp app = new MarkdownApp();
         app.setSource(sourcePath);
         app.setDestination(destination);
         app.setHeader(headerPath);
         app.setFooter(footerPath);
-        app.strictHtmlEncoding();
         app.setCharEncoding("UTF-8");
         app.process();
         File destinationFile = new File(destination + "/syntax.html");
