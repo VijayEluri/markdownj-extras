@@ -27,6 +27,11 @@ Maven install of git://github.com/enr/markdownj.git version 0.4.M20100621.
     wget 'http://github.com/enr/markdownj/tarball/0.4.M20100621'
 
 
+Building
+--------
+
+Git clone or download of the last version Jar at <http://github.com/downloads/enr/markdownj-extras/markdownj-extras-0.3.2.jar>.
+
 Markdown App
 ------------
 
