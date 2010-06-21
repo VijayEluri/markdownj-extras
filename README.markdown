@@ -22,9 +22,9 @@ Features
 Prerequisites
 -------------
 
-Maven install of git://github.com/enr/markdownj.git version 0.4.M20100517.
+Maven install of git://github.com/enr/markdownj.git version 0.4.M20100621.
 
-    wget 'http://github.com/enr/markdownj/tarball/0.4.M20100517'
+    wget 'http://github.com/enr/markdownj/tarball/0.4.M20100621'
 
 
 Markdown App
