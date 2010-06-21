@@ -23,7 +23,6 @@ import org.testng.annotations.Test;
 
 import com.github.enr.markdownj.extras.MarkdownService;
 import com.github.enr.markdownj.extras.MarkdownServiceImpl;
-import com.petebevin.markdown.Entities;
 
 /**
  * 
