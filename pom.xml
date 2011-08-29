@@ -4,7 +4,7 @@
   <groupId>com.github.enr</groupId>
   <artifactId>markdownj-extras</artifactId>
   <packaging>jar</packaging>
-  <version>0.4</version>
+  <version>0.5-SNAPSHOT</version>
   <name>Markdown Extras</name>
   <description>Basic implementations of common use cases for Markdown, using MarkdownJ library.</description>
   <url>https://github.com/enr/markdownj-extras</url>
