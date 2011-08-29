@@ -19,14 +19,6 @@ Features
     A basic application which uses MarkdownService to process recursively the markdown files in a given directory.
 
 
-Prerequisites
--------------
-
-Maven install of git://github.com/enr/markdownj.git version 0.4.M20100621.
-
-    wget 'http://github.com/enr/markdownj/tarball/0.4.M20100621'
-
-
 Building
 --------
 
