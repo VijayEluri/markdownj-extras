@@ -8,3 +8,6 @@ profiles.xml
 *~
 target
 test-output
+.gradle
+*#
+Thumbs.db

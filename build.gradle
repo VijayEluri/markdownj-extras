@@ -1,0 +1,121 @@
+
+import java.text.SimpleDateFormat
+
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+
+group = 'com.github.enr'
+
+ext {
+
+}
+
+buildDir = 'target'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+artifacts {
+    tasks.withType(Zip) { task ->
+        archives task
+    }
+}
+
+afterEvaluate {
+    tasks.withType(Zip) { task ->
+        task.doLast {
+            ant.checksum file: it.archivePath
+        }
+    }
+}
+
+configurations {
+    compile.transitive = true
+    testCompile.transitive = true
+}
+
+dependencies {
+
+    compile 'com.madgag:markdownj-core:0.4.1',
+            'commons-cli:commons-cli:1.2',
+            'commons-io:commons-io:1.4',
+            'org.slf4j:slf4j-api:1.6.1',
+            'org.slf4j:slf4j-log4j12:1.6.1',
+            'log4j:log4j:1.2.16'
+
+            
+    testCompile 'org.testng:testng:6.5.2',
+                'org.easytesting:fest-assert-core:2.0M6'
+}
+
+test {
+    useTestNG()
+    //makes the standard streams (err and out) visible at console when running tests
+    testLogging.showStandardStreams = false
+    //listening to test execution events
+    
+    beforeTest { descriptor ->
+        logger.lifecycle("-------    Running test: " + descriptor)
+    }
+    onOutput { descriptor, event ->
+        logger.lifecycle(event.message )
+    }
+}
+
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+jar.doLast { task ->
+    ant.checksum file: task.archivePath
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar, dependsOn: 'javadoc') {
+    from javadoc.destinationDir
+    classifier = 'javadoc'
+}
+
+tasks.withType(Jar).each{ jarTask ->
+    jarTask.manifest {
+        Date buildTime = new Date()
+        attributes(
+            'Built-By': System.properties['user.name'],
+            'Created-By': System.properties['java.vm.version'] + " (" + System.properties['java.vm.vendor'] + ")",
+            'Build-Date': new SimpleDateFormat('dd-MMM-yyyy').format(buildTime),
+            'Build-Time': new SimpleDateFormat('hh:mm aa').format(buildTime),
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version
+        )
+    }
+}
+
+artifacts {
+    archives sourceJar, javadocJar
+    def md5 = []
+    configurations.archives.allArtifacts.files.each { File file ->
+        md5 << "${file.getAbsolutePath()}.MD5"
+    }
+    md5.each { checksum ->
+        archives file(checksum)
+    }
+}
+        
+eclipse {
+    classpath {
+        // to keep the same depth in the build from in and outside Eclipse
+        defaultOutputDir = new File("${project.buildDir}/eclipse/classes");
+        downloadJavadoc = true
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.0'
+}
+
