@@ -20,6 +20,7 @@ import static org.testng.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.github.enr.markdownj.extras.FileUtils;
-import com.github.enr.markdownj.extras.MarkdownApp;
+import com.google.common.io.Files;
 
 /**
  * Integration test for MarkdownApp
@@ -217,7 +217,7 @@ public class AppTest {
     private String readCreatedFile(File afile) {
         String text;
         try {
-            text = org.apache.commons.io.FileUtils.readFileToString(afile, "UTF-8");
+            text = Files.toString(afile, Charset.forName("UTF-8"));
             // Standardize line endings:
             text = text.replaceAll("\\r\\n", "\n"); // DOS to Unix
             text = text.replaceAll("\\r", "\n"); // Mac to Unix

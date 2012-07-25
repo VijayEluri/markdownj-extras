@@ -15,7 +15,6 @@
 package com.github.enr.markdownj.extras;
 
 import java.net.URL;
-import java.util.Map;
 
 import com.petebevin.markdown.MarkdownProcessor;
 

@@ -18,6 +18,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
+
+import com.google.common.io.Files;
 
 /**
  * Provides utility methods for working with files.
@@ -45,11 +48,12 @@ public class FileUtils {
      * 
      * @param filename
      * @param encoding the encoding to use, null means platform default
-     * @return
+     * @return the given file content
      */
     public static String readFileFromPath(String filename, String encoding) {
         try {
-            return org.apache.commons.io.FileUtils.readFileToString(new File(filename), encoding);
+        	Charset charset = charsetForNameOrDefault(encoding);
+        	return Files.toString(new File(filename), charset);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -75,7 +79,8 @@ public class FileUtils {
     public static String readFileFromUrl(URL fileurl, String encoding) {
         String fileContent = "";
         try {
-            fileContent = org.apache.commons.io.FileUtils.readFileToString(fileFromUrl(fileurl), encoding);
+        	Charset charset = charsetForNameOrDefault(encoding);
+            fileContent = Files.toString(fileFromUrl(fileurl), charset);
         } catch (IOException e) {
             throw new RuntimeException("Error reading " + fileurl, e);
         }
@@ -112,15 +117,21 @@ public class FileUtils {
         if (!parent.exists()) {
             parent.mkdirs();
         }
-        org.apache.commons.io.FileUtils.writeStringToFile(file, text, encoding);
+        Charset charset = charsetForNameOrDefault(encoding);
+        Files.write(text, file, charset);
     }
 
-    /**
+    private static Charset charsetForNameOrDefault(String encoding) {
+    	Charset charset = (encoding == null) ? Charset.defaultCharset() : Charset.forName(encoding);
+		return charset;
+	}
+
+	/**
      * Replaces all backslashes with slash char. 
      * Throws NPE if the original path is null.
      * 
      * @param original the path to normalize.
-     * @return
+     * @return the normalized path
      */
     public static String normalizedPath(String original) {
         return original.replaceAll("\\\\", "/");
@@ -140,16 +151,4 @@ public class FileUtils {
         return originalName + newExtension;
     }
 
-    /**
-     * 
-     * @param filename
-     * @return the file extension (without dot) if any, or empty string if filename doesn't contain any dot.
-     */
-    public static String extension(String filename) {
-        int lastDot = filename.lastIndexOf(".");
-        if (lastDot != -1) {
-            return filename.substring(lastDot + 1);
-        }
-        return "";
-    }
 }

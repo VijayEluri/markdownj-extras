@@ -40,7 +40,7 @@ dependencies {
 
     compile 'com.madgag:markdownj-core:0.4.1',
             'commons-cli:commons-cli:1.2',
-            'commons-io:commons-io:1.4',
+            'com.google.guava:guava:12.0',
             'org.slf4j:slf4j-api:1.6.1',
             'org.slf4j:slf4j-log4j12:1.6.1',
             'log4j:log4j:1.2.16'
@@ -55,13 +55,14 @@ test {
     //makes the standard streams (err and out) visible at console when running tests
     testLogging.showStandardStreams = false
     //listening to test execution events
-    
+    /*
     beforeTest { descriptor ->
         logger.lifecycle("-------    Running test: " + descriptor)
     }
     onOutput { descriptor, event ->
         logger.lifecycle(event.message )
     }
+    */
 }
 
 

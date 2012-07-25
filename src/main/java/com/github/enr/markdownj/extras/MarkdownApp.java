@@ -30,6 +30,8 @@ import org.apache.commons.cli.PosixParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.io.Files;
+
 
 /**
  * Markdown app. Transforms in html every file found in source dir, maintaining
@@ -208,7 +210,7 @@ public class MarkdownApp {
     public void processFile(final File f) {
         String mdFilePath = FileUtils.normalizedPath(f.getAbsolutePath());
         String df = mdFilePath.replaceFirst(source, destination);
-        String extension = FileUtils.extension(df);
+        String extension = Files.getFileExtension(df);
         if ((getProcessableExtensions().size() == 0) || (getProcessableExtensions().contains(extension))) {
             String destinationFile = FileUtils.changeExtension(df, ".html");
             log().debug("process '{}' -> '{}'", mdFilePath, destinationFile);
