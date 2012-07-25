@@ -170,7 +170,7 @@ public class AppTest {
         File destinationFile = new File(destination + "/entities.html");
         assertTrue(destinationFile.exists());
         String results = readCreatedFile(destinationFile);
-        assertEquals(results, "<html>\n<h1>This is H1</h1>\n\n<p>4 £ for a à</p>\n\n<pre><code>and nòw ìs code\n</code></pre>\n\n<p>the end!</p>\n\n</html>\n");
+        assertEquals(results, new String("<html>\n<h1>This is H1</h1>\n\n<p>4 £ for a à</p>\n\n<pre><code>and nòw ìs code\n</code></pre>\n\n<p>the end!</p>\n\n</html>\n".getBytes(), java.nio.charset.Charset.forName("UTF-8")));
     }
 
 
